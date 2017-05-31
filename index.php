@@ -22,13 +22,16 @@ if ($conn->connect_error) {
 }
 
 $sql = "SELECT * FROM data";
+$varping = '';
+$vardlspeed = '';
+$varulspeed = '';
 $result = $conn->query($sql); if ($result->num_rows > 0) {
-	// output data of each row
-	while($row = $result->fetch_assoc()) {
-		$varping .= "[". ((strtotime($row["Date"]) + 11*60*60) * 1000). ", ". $row["Ping"]. "], ";
-		$vardlspeed .= "[". ((strtotime($row["Date"]) + 11*60*60) * 1000). ", ". $row["DownSpeed"]. "], ";
-		$varulspeed .= "[". ((strtotime($row["Date"]) + 11*60*60) * 1000). ", ". $row["UpSpeed"]. "], ";
-	}
+   // output data of each row
+   while($row = $result->fetch_assoc()) {
+      $varping .= "[". ($row["sample_date_utc"]). ", ". $row["ping"]. "], ";
+      $vardlspeed .= "[". ($row["sample_date_utc"]). ", ". $row["downspeed"]. "], ";
+      $varulspeed .= "[". ($row["sample_date_utc"]). ", ". $row["upspeed"]. "], ";
+   }
 } else {
 	echo "0 results";
 }
@@ -40,6 +43,8 @@ $varulspeed = rtrim($varulspeed, ', ');
 ?>
 
 <script>
+var tmpdate = new Date();
+var tzoffset_mins = tmpdate.getTimezoneOffset();
 var chart = new Highcharts.StockChart({
       chart: {
          renderTo: 'container'
@@ -78,7 +83,7 @@ var chart = new Highcharts.StockChart({
       selected: 2
       },
       series: [{
-         name: 'Ping',
+         name: 'ping',
          data: [<?php echo "$varping" ?>]
       }, {
          name: 'Download Speed',
@@ -90,9 +95,10 @@ var chart = new Highcharts.StockChart({
 });
 
 var chartoptions = Highcharts.setOptions({
-	global: {
-		useUTC: false
-	}
+   global: {
+      useUTC: false,
+      timezoneOffset: (tzoffset_mins * -1) * 60
+   }
 });
 </script>
 

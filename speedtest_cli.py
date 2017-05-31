@@ -24,6 +24,9 @@ import socket
 import timeit
 import platform
 import threading
+import time
+from datetime import datetime
+
 import MySQLdb
 
 __version__ = '0.3.4'
@@ -809,12 +812,14 @@ def speedtest():
     dlspeed = (dlspeed/1000/1000)*8
     ulspeed = (ulspeed/1000/1000)*8
     db = Database()
+
+    utcsmtamp = int(time.mktime(datetime.now().timetuple())) * 1000
     query = """
         INSERT INTO data
-        (Date,Ping,DownSpeed,UpSpeed)
+        (sample_date_utc, ping, downspeed, upspeed)
         VALUES
-        (NOW(), %f, %f, %f)
-        """ % (best['latency'], dlspeed, ulspeed)
+        (%s, %f, %f, %f)
+        """ % (utcsmtamp, best['latency'], dlspeed, ulspeed)
     db.insert(query)
 
 
