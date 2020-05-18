@@ -57,8 +57,9 @@ var chart = new Highcharts.StockChart({
       },
       yAxis: {
          title: {
-            text: 'Speed (Mbps)'
-      }
+	    text: 'Speed (Mbps)'
+         }
+      },
       rangeSelector: {
       buttons: [{
          type: 'hour',
